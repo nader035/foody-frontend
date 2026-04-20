@@ -307,7 +307,7 @@ interface PasswordResetData {
 
 const baseUrl =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:5000/api/v1";
+  "https://foody-backend-production.up.railway.app/api/v1";
 
 const authCookieMaxAgeSeconds = 60 * 60 * 24 * 7;
 
