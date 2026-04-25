@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BranchStaff } from '@/features/staff/components/branch-staff';
+import { BranchStaff } from "@/features/staff";
 
 export const metadata: Metadata = {
   title: "Staff Dashboard",

@@ -1,8 +1,8 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
-import { clearAuthSession } from "@/lib/api-client";
+import { clearAuthSession } from "@/platform/auth/session.client";
+import { Logo } from "@/shared/branding";
 import {
   LayoutDashboard,
   GitBranch,

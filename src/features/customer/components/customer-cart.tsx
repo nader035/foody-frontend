@@ -4,12 +4,13 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Leaf, Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
-import { apiCheckoutOrders, getAuthToken } from "@/lib/api-client";
-import { useCart } from "@/features/customer/hooks/cart-context";
-import { ImageWithFallback } from "@/components/shared/figma/ImageWithFallback";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { apiCheckoutOrders } from "@/features/customer/api";
 import { CustomerNav } from "@/features/customer/components/customer-nav";
+import { useCart } from "@/features/customer/hooks/cart-context";
+import { getAuthUser } from "@/platform/auth/session.client";
+import { ImageWithFallback } from "@/shared/media";
+import { Alert, AlertDescription } from "@/shared/ui/primitives/alert";
+import { Button } from "@/shared/ui/primitives/button";
 
 function formatEgp(amount: number) {
   return `E£${amount.toFixed(2)}`;
@@ -47,8 +48,7 @@ export function CustomerCart() {
       return;
     }
 
-    const token = getAuthToken();
-    if (!token) {
+    if (!getAuthUser()) {
       router.push("/auth");
       return;
     }

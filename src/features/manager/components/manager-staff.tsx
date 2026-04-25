@@ -30,7 +30,7 @@ import {
   apiUpdateUserStatus,
   type CharityUser,
   type Branch,
-} from "@/lib/api-client";
+} from "@/features/manager/api";
 
 // Staff is a "staff" role user in the backend
 type StaffStatus = "Active" | "Inactive";

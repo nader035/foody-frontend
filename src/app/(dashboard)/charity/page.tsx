@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CharityPortal } from '@/features/charity/components/charity-portal';
+import { CharityPortal } from "@/features/charity";
 
 export const metadata: Metadata = {
   title: "Charity Dashboard",

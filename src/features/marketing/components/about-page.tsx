@@ -1,8 +1,9 @@
 "use client";
+
 import { useRouter } from "next/navigation";
-import { Logo } from "@/components/shared/Logo";
-import { ImageWithFallback } from "@/components/shared/figma/ImageWithFallback";
 import { MarketingNavbar } from "@/features/marketing/components/shared/marketing-navbar";
+import { Logo } from "@/shared/branding";
+import { ImageWithFallback } from "@/shared/media";
 import {
   ArrowRight,
   Heart,
@@ -31,6 +32,7 @@ const marketStats = [
 
 export function AboutPage() {
   const navigate = useRouter();
+
   return (
     <div
       className="min-h-screen bg-white"
@@ -60,7 +62,7 @@ export function AboutPage() {
               enjoy fresh food, and at the same time reduce food waste while
               contributing to tangible social impact.
             </p>
-            <div className="grid grid-cols-3">
+            <div className="flex justify-start gap-10">
               {[
                 { v: "2026", l: "Founded" },
                 { v: "Food & Restaurants", l: "Industry" },
@@ -73,7 +75,7 @@ export function AboutPage() {
                   >
                     {s.v}
                   </p>
-                  <p className="text-gray-400 text-xs">{s.l}</p>
+                  <p className="text-gray-400 text-xs text-center">{s.l}</p>
                 </div>
               ))}
             </div>

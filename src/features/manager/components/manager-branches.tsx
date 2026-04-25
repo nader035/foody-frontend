@@ -14,7 +14,7 @@ import {
   apiCreateBranch,
   apiListBranches,
   type Branch,
-} from "@/lib/api-client";
+} from "@/features/manager/api";
 
 export function ManagerBranches() {
   const [search, setSearch] = useState("");

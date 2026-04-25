@@ -2,8 +2,9 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
-import { apiResetPassword, saveAuthSession } from "@/lib/api-client";
+import { Logo } from "@/shared/branding";
+import { apiResetPassword } from "@/features/auth/api";
+import { saveAuthSession } from "@/platform/auth/session.client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -80,7 +81,7 @@ export function AuthResetPassword() {
         token,
         password: values.password,
       });
-      saveAuthSession(result.token, result.user);
+      saveAuthSession(result.user);
       setSuccess(true);
 
       setTimeout(() => {

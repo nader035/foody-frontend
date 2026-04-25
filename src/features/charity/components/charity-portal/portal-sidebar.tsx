@@ -7,7 +7,7 @@ import {
   Settings,
   User,
 } from "lucide-react";
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 import type { Tab } from "./types";
 
 interface PortalSidebarProps {

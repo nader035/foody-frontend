@@ -4,7 +4,7 @@ import {
   getRequiredRole,
   isGuestOnlyRoute,
   roleHome,
-} from "@/lib/route-access";
+} from "@/platform/auth/route-access";
 
 type UserRole = "customer" | "manager" | "staff" | "charity";
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CustomerListings } from '@/features/customer/components/customer-listings';
+import { CustomerListings } from "@/features/customer";
 
 export const metadata: Metadata = {
   title: "Customer Marketplace",

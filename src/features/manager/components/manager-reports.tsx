@@ -33,7 +33,7 @@ import {
   type CustomerOrder,
   type Donation,
   type SurplusMeal,
-} from "@/lib/api-client";
+} from "@/features/manager/api";
 
 const tooltipStyle = {
   background: "#fff",

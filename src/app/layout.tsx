@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
-import { RouteGuard } from "@/features/shared/components/route-guard";
+import { QueryProvider } from "@/lib/query-provider";
+import { RouteGuard } from "@/platform/auth/route-guard";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -29,8 +30,10 @@ export default function RootLayout({
       className={`${nunito.variable} h-full antialiased font-sans`}
     >
       <body className="min-h-full flex flex-col">
-        <RouteGuard />
-        {children}
+        <QueryProvider>
+          <RouteGuard />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Logo } from "@/components/shared/Logo";
 import { MarketingNavbar } from "@/features/marketing/components/shared/marketing-navbar";
+import { Logo } from "@/shared/branding";
 import { Check, ArrowRight, Zap, Building2, Crown } from "lucide-react";
 
 const plans = [

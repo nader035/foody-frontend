@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ManagerOverview } from '@/features/manager/components/manager-overview';
+import { ManagerOverview } from "@/features/manager";
 
 export const metadata: Metadata = {
   title: "Manager Dashboard",

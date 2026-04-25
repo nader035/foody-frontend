@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   Check,
@@ -14,208 +13,33 @@ import {
   Users,
   X,
 } from "lucide-react";
-import {
-  apiListDonations,
-  apiListUsers,
-  apiRegister,
-  type CharityUser,
-  type Donation,
-} from "@/lib/api-client";
-
-interface CharityView extends CharityUser {
-  totalReceived: number;
-  pendingDonations: number;
-  lastUpdate?: string;
-}
-
-function formatDate(value?: string) {
-  if (!value) {
-    return "No activity";
-  }
-  return new Date(value).toLocaleString(undefined, {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+import { useManagerCharities } from "@/features/manager/hooks/useManagerCharities";
 
 export function ManagerCharities() {
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const {
+    isLoading,
+    isCreating,
+    search,
+    setSearch,
+    displayError,
+    successMessage,
+    showAddModal,
+    openAddModal,
+    closeAddModal,
+    filtered,
+    stats,
+    selectedCharity,
+    selectedHistory,
+    selectedCharityId,
+    setSelectedCharityId,
+    newCharity,
+    updateNewCharityField,
+    regeneratePassword,
+    submitCreateCharity,
+    formatDate,
+  } = useManagerCharities();
 
-  const [charities, setCharities] = useState<CharityView[]>([]);
-  const [donations, setDonations] = useState<Donation[]>([]);
-  const [selectedCharityId, setSelectedCharityId] = useState<string | null>(
-    null,
-  );
-  const [showAddModal, setShowAddModal] = useState(false);
-
-  const [newCharity, setNewCharity] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    organizationName: "",
-    organizationAddress: "",
-    organizationWebsite: "",
-    password: "Charity123",
-  });
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setErrorMessage("");
-
-      const [users, donationResult] = await Promise.all([
-        apiListUsers("charity"),
-        apiListDonations({
-          limit: 100,
-          sortBy: "createdAt",
-          sortDirection: "desc",
-        }),
-      ]);
-
-      const donationByCharity = new Map<string, Donation[]>();
-      donationResult.items.forEach((donation) => {
-        const current = donationByCharity.get(donation.charityId) || [];
-        current.push(donation);
-        donationByCharity.set(donation.charityId, current);
-      });
-
-      const enriched: CharityView[] = users.map((charity) => {
-        const charityDonations = donationByCharity.get(charity._id) || [];
-        return {
-          ...charity,
-          totalReceived: charityDonations
-            .filter((donation) => donation.status === "completed")
-            .reduce((sum, donation) => sum + donation.quantity, 0),
-          pendingDonations: charityDonations.filter((donation) =>
-            ["matched", "confirmed", "picked_up"].includes(donation.status),
-          ).length,
-          lastUpdate: charityDonations[0]?.updatedAt,
-        };
-      });
-
-      setCharities(enriched);
-      setDonations(donationResult.items);
-      setSelectedCharityId((current) => current || enriched[0]?._id || null);
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to load charities",
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const filtered = useMemo(() => {
-    const query = search.toLowerCase();
-    if (!query) {
-      return charities;
-    }
-
-    return charities.filter((charity) =>
-      [
-        charity.fullName,
-        charity.organizationName,
-        charity.email,
-        charity.organizationAddress,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(query),
-    );
-  }, [charities, search]);
-
-  const selectedCharity =
-    charities.find((charity) => charity._id === selectedCharityId) || null;
-
-  const selectedHistory = useMemo(
-    () =>
-      donations
-        .filter((donation) => donation.charityId === selectedCharityId)
-        .slice(0, 6),
-    [donations, selectedCharityId],
-  );
-
-  const stats = useMemo(() => {
-    const active = charities.length;
-    const totalMeals = charities.reduce(
-      (sum, charity) => sum + charity.totalReceived,
-      0,
-    );
-    const pending = charities.reduce(
-      (sum, charity) => sum + charity.pendingDonations,
-      0,
-    );
-
-    return {
-      active,
-      totalMeals,
-      pending,
-    };
-  }, [charities]);
-
-  async function handleCreateCharity() {
-    if (
-      !newCharity.fullName ||
-      !newCharity.email ||
-      !newCharity.organizationName ||
-      !newCharity.organizationAddress ||
-      !newCharity.password
-    ) {
-      setErrorMessage("Please complete required fields");
-      return;
-    }
-
-    try {
-      setSaving(true);
-      setErrorMessage("");
-      setSuccessMessage("");
-
-      await apiRegister({
-        fullName: newCharity.fullName,
-        email: newCharity.email,
-        password: newCharity.password,
-        role: "charity",
-        phone: newCharity.phone || undefined,
-        organizationName: newCharity.organizationName,
-        organizationAddress: newCharity.organizationAddress,
-        organizationWebsite: newCharity.organizationWebsite || undefined,
-      });
-
-      setShowAddModal(false);
-      setNewCharity({
-        fullName: "",
-        email: "",
-        phone: "",
-        organizationName: "",
-        organizationAddress: "",
-        organizationWebsite: "",
-        password: "Charity123",
-      });
-      setSuccessMessage("Charity partner created successfully");
-      await loadData();
-      setTimeout(() => setSuccessMessage(""), 2000);
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "Failed to create charity",
-      );
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="bg-white rounded-xl border border-gray-100 p-6 text-sm text-gray-500 shadow-sm">
         Loading charity partners...
@@ -235,7 +59,7 @@ export function ManagerCharities() {
           </p>
         </div>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={openAddModal}
           className="bg-[#25A05F] hover:bg-[#1e8a4f] text-white px-4 py-2.5 rounded-xl text-sm flex items-center gap-2 transition-colors shadow-sm"
           style={{ fontWeight: 600 }}
         >
@@ -243,9 +67,9 @@ export function ManagerCharities() {
         </button>
       </div>
 
-      {errorMessage && (
+      {displayError && (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
-          <AlertTriangle size={14} /> {errorMessage}
+          <AlertTriangle size={14} /> {displayError}
         </div>
       )}
 
@@ -404,7 +228,7 @@ export function ManagerCharities() {
       {showAddModal && (
         <div
           className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4"
-          onClick={() => setShowAddModal(false)}
+          onClick={closeAddModal}
         >
           <div
             className="bg-white rounded-2xl border border-gray-100 shadow-xl w-full max-w-xl"
@@ -418,7 +242,7 @@ export function ManagerCharities() {
                 Add Charity Partner
               </h2>
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={closeAddModal}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <X size={20} />
@@ -429,7 +253,7 @@ export function ManagerCharities() {
               <input
                 value={newCharity.fullName}
                 onChange={(e) =>
-                  setNewCharity({ ...newCharity, fullName: e.target.value })
+                  updateNewCharityField("fullName", e.target.value)
                 }
                 placeholder="Contact Full Name *"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#25A05F]"
@@ -437,37 +261,27 @@ export function ManagerCharities() {
               <input
                 value={newCharity.organizationName}
                 onChange={(e) =>
-                  setNewCharity({
-                    ...newCharity,
-                    organizationName: e.target.value,
-                  })
+                  updateNewCharityField("organizationName", e.target.value)
                 }
                 placeholder="Organization Name *"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#25A05F]"
               />
               <input
                 value={newCharity.email}
-                onChange={(e) =>
-                  setNewCharity({ ...newCharity, email: e.target.value })
-                }
+                onChange={(e) => updateNewCharityField("email", e.target.value)}
                 placeholder="Email *"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#25A05F]"
               />
               <input
                 value={newCharity.phone}
-                onChange={(e) =>
-                  setNewCharity({ ...newCharity, phone: e.target.value })
-                }
+                onChange={(e) => updateNewCharityField("phone", e.target.value)}
                 placeholder="Phone"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#25A05F]"
               />
               <textarea
                 value={newCharity.organizationAddress}
                 onChange={(e) =>
-                  setNewCharity({
-                    ...newCharity,
-                    organizationAddress: e.target.value,
-                  })
+                  updateNewCharityField("organizationAddress", e.target.value)
                 }
                 placeholder="Organization Address *"
                 rows={2}
@@ -476,10 +290,7 @@ export function ManagerCharities() {
               <input
                 value={newCharity.organizationWebsite}
                 onChange={(e) =>
-                  setNewCharity({
-                    ...newCharity,
-                    organizationWebsite: e.target.value,
-                  })
+                  updateNewCharityField("organizationWebsite", e.target.value)
                 }
                 placeholder="Website"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#25A05F]"
@@ -487,11 +298,21 @@ export function ManagerCharities() {
               <input
                 value={newCharity.password}
                 onChange={(e) =>
-                  setNewCharity({ ...newCharity, password: e.target.value })
+                  updateNewCharityField("password", e.target.value)
                 }
                 placeholder="Temporary Password *"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#25A05F]"
               />
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={regeneratePassword}
+                  className="text-xs text-[#25A05F] hover:text-[#1e8a4f]"
+                  style={{ fontWeight: 600 }}
+                >
+                  Generate secure password
+                </button>
+              </div>
               <p className="text-xs text-gray-400">
                 Password needs 8+ chars, 1 uppercase, 1 number.
               </p>
@@ -499,12 +320,12 @@ export function ManagerCharities() {
 
             <div className="px-6 pb-6 flex justify-end">
               <button
-                onClick={handleCreateCharity}
-                disabled={saving}
+                onClick={submitCreateCharity}
+                disabled={isCreating}
                 className="bg-[#25A05F] hover:bg-[#1e8a4f] text-white px-6 py-2.5 rounded-xl text-sm transition-colors disabled:opacity-60"
                 style={{ fontWeight: 600 }}
               >
-                {saving ? "Creating..." : "Create Charity"}
+                {isCreating ? "Creating..." : "Create Charity"}
               </button>
             </div>
           </div>
@@ -513,4 +334,3 @@ export function ManagerCharities() {
     </>
   );
 }
-
