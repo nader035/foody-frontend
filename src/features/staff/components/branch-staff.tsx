@@ -358,7 +358,7 @@ export function BranchStaff() {
         currency: "EGP",
         visibility: {
           allowDonation,
-          allowMarketplace,
+          allowMarketplace: allowMarketplace && effectiveDonationPct < 100,
         },
         status: "available",
         expiresAt: expiresAtDate.toISOString(),
