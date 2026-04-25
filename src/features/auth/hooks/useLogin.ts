@@ -11,7 +11,7 @@ export function useLogin() {
   return useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
     onSuccess: (response) => {
-      saveAuthUser(response.user);
+      saveAuthUser(response.user, response.token);
       queryClient.setQueryData(authQueryKeys.currentUser, response.user);
     },
   });

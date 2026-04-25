@@ -27,7 +27,9 @@ function clearClientAuthState() {
   }
 
   localStorage.removeItem("foody_user");
+  localStorage.removeItem("foody_token");
   document.cookie = "foody_role=; Path=/; Max-Age=0; SameSite=Lax";
+  document.cookie = "foody_token=; Path=/; Max-Age=0; SameSite=Lax";
 }
 
 function toHttpError(error: AxiosError<ApiErrorPayload>) {
@@ -56,6 +58,16 @@ export const http = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+http.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("foody_token");
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
 });
 
 http.interceptors.response.use(

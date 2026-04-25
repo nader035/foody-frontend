@@ -81,7 +81,7 @@ export function AuthResetPassword() {
         token,
         password: values.password,
       });
-      saveAuthSession(result.user);
+      saveAuthSession(result.user, result.token);
       setSuccess(true);
 
       setTimeout(() => {

@@ -10,6 +10,7 @@ interface ApiEnvelope<T> {
 
 export interface AuthResponse {
   user: UserProfile;
+  token: string;
 }
 
 async function unwrapResponse<T>(promise: Promise<{ data: ApiEnvelope<T> }>) {

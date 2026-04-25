@@ -14,7 +14,7 @@ export function useRegister() {
   return useMutation({
     mutationFn: (payload: RegisterPayload) => authApi.register(payload),
     onSuccess: (response) => {
-      saveAuthUser(response.user);
+      saveAuthUser(response.user, response.token);
       queryClient.setQueryData(authQueryKeys.currentUser, response.user);
     },
   });
