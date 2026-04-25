@@ -340,9 +340,14 @@ export function BranchStaff() {
       setErrorMessage("");
       setSubmitMessage("");
 
-      const today = new Date();
+      const expiresAtDate = new Date();
       const [hh, mm] = expiry.split(":");
-      today.setHours(Number(hh), Number(mm), 0, 0);
+      expiresAtDate.setHours(Number(hh), Number(mm), 0, 0);
+
+      // If the selected time is earlier than the current time, they likely mean tomorrow
+      if (expiresAtDate < new Date()) {
+        expiresAtDate.setDate(expiresAtDate.getDate() + 1);
+      }
 
       const createdMeal = await apiCreateMeal({
         title: mealName.trim(),
@@ -356,7 +361,7 @@ export function BranchStaff() {
           allowMarketplace,
         },
         status: "available",
-        expiresAt: today.toISOString(),
+        expiresAt: expiresAtDate.toISOString(),
         images: parsedImages.valid,
         allergens: parseDelimitedList(allergensInput),
         tags: parseDelimitedList(tagsInput),
