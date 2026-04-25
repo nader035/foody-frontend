@@ -18,7 +18,7 @@ const features = [
     label: "Surplus Tracking",
     icon: BarChart3,
     title: "Real-time surplus tracking across all branches",
-    desc: "Monitor food surplus as it happens. Our intelligent dashboard gives managers complete visibility into every branch, meal type, and time window ? so nothing goes to waste unnoticed.",
+    desc: "Monitor food surplus as it happens. Our intelligent dashboard gives managers complete visibility into every branch, meal type, and time window — so nothing goes to waste unnoticed.",
     bullets: [
       "Live branch-by-branch surplus feed",
       "Automatic categorization by meal type",
@@ -30,7 +30,7 @@ const features = [
     label: "Smart Donations",
     icon: Heart,
     title: "Automated donation matching with local charities",
-    desc: "Foody automatically routes surplus meals to nearby charities based on quantity, pickup windows, and location. Charities get instant notifications ? no manual coordination needed.",
+    desc: "Foody automatically routes surplus meals to nearby charities based on quantity, pickup windows, and location. Charities get instant notifications — no manual coordination needed.",
     bullets: [
       "Auto-match with nearest charity",
       "One-tap pickup confirmation",
@@ -54,10 +54,10 @@ const features = [
     label: "Impact Reports",
     icon: TrendingUp,
     title: "Measure your environmental and social impact",
-    desc: "Generate beautiful reports showing meals donated, CO? saved, revenue recovered, and community impact. Perfect for CSR reporting and stakeholder presentations.",
+    desc: "Generate beautiful reports showing meals donated, CO₂ saved, revenue recovered, and community impact. Perfect for CSR reporting and stakeholder presentations.",
     bullets: [
       "Automated weekly/monthly reports",
-      "CO? and waste reduction metrics",
+      "CO₂ and waste reduction metrics",
       "Export to PDF or share online",
     ],
   },
@@ -161,7 +161,7 @@ export function LandingFeatures() {
                 </div>
                 {activeFeature === "track" && (
                   <div className="space-y-2">
-                    {["Downtown Main ? 28 meals", "Mall Central ? 35 meals", "Airport Road ? 22 meals"].map((t) => (
+                    {["Downtown Main — 28 meals", "Mall Central — 35 meals", "Airport Road — 22 meals"].map((t) => (
                       <div key={t} className="flex items-center justify-between py-2 border-b border-gray-50">
                         <span className="text-sm text-gray-600">{t}</span>
                         <span className="w-2 h-2 rounded-full bg-[#25A05F]" />
@@ -173,10 +173,10 @@ export function LandingFeatures() {
                   <div className="space-y-2">
                     <div className="bg-[#25A05F]/10 rounded-lg p-3 text-sm text-[#155433]">
                       <p style={{ fontWeight: 600 }}>New match found!</p>
-                      <p className="text-xs text-gray-500 mt-1">6 meals ? City Food Bank ? 1.2 km away</p>
+                      <p className="text-xs text-gray-500 mt-1">6 meals — City Food Bank — 1.2 km away</p>
                     </div>
                     <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-500">
-                      <p>8 meals ? Community Kitchen ? 2.5 km</p>
+                      <p>8 meals — Community Kitchen — 2.5 km</p>
                     </div>
                   </div>
                 )}
@@ -203,7 +203,7 @@ export function LandingFeatures() {
                 {activeFeature === "report" && (
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm"><span className="text-gray-500">Meals saved</span><span className="text-[#155433]" style={{ fontWeight: 700 }}>1,247</span></div>
-                    <div className="flex justify-between text-sm"><span className="text-gray-500">CO? prevented</span><span className="text-[#155433]" style={{ fontWeight: 700 }}>3.2 tons</span></div>
+                    <div className="flex justify-between text-sm"><span className="text-gray-500">CO₂ prevented</span><span className="text-[#155433]" style={{ fontWeight: 700 }}>3.2 tons</span></div>
                     <div className="flex justify-between text-sm"><span className="text-gray-500">Revenue recovered</span><span className="text-[#25A05F]" style={{ fontWeight: 700 }}>$8,420</span></div>
                     <div className="w-full bg-gray-100 rounded-full h-2 mt-2"><div className="bg-[#25A05F] h-2 rounded-full" style={{ width: "82%" }} /></div>
                     <p className="text-[10px] text-gray-400">82% waste reduction target achieved</p>

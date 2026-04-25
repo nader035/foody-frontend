@@ -315,36 +315,37 @@ type QueryParams = Record<string, QueryValue>;
 
 export const API_ENDPOINTS = {
   users: {
-    base: "/users",
-    register: "/users/register",
-    login: "/users/login",
-    forgotPassword: "/users/forgot-password",
-    resetPassword: "/users/reset-password",
-    me: "/users/me",
-    changePassword: "/users/change-password",
-    staff: "/users/staff",
-    charities: "/users/charities",
-    status: (userId: string) => `/users/${userId}/status`,
+    base: "users",
+    register: "users/register",
+    login: "users/login",
+    forgotPassword: "users/forgot-password",
+    resetPassword: "users/reset-password",
+    me: "users/me",
+    changePassword: "users/change-password",
+    staff: "users/staff",
+    charities: "users/charities",
+    status: (userId: string) => `users/${userId}/status`,
   },
   meals: {
-    base: "/meals",
-    byId: (mealId: string) => `/meals/${mealId}`,
-    status: (mealId: string) => `/meals/${mealId}/status`,
+    base: "meals",
+    byId: (mealId: string) => `meals/${mealId}`,
+    status: (mealId: string) => `meals/${mealId}/status`,
   },
   orders: {
-    base: "/orders",
-    checkout: "/orders/checkout",
-    status: (orderId: string) => `/orders/${orderId}/status`,
+    base: "orders",
+    checkout: "orders/checkout",
+    status: (orderId: string) => `orders/${orderId}/status`,
   },
   donations: {
-    base: "/donations",
-    status: (donationId: string) => `/donations/${donationId}/status`,
+    base: "donations",
+    status: (donationId: string) => `donations/${donationId}/status`,
   },
   branches: {
-    base: "/branches",
-    byId: (branchId: string) => `/branches/${branchId}`,
+    base: "branches",
+    byId: (branchId: string) => `branches/${branchId}`,
   },
 } as const;
+
 
 function writeCookie(
   name: string,

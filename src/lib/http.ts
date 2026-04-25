@@ -31,19 +31,27 @@ function clearClientAuthState() {
 }
 
 function toHttpError(error: AxiosError<ApiErrorPayload>) {
-  const details = error.response?.data?.errors;
-  const detailsMessage = details?.map((entry) => entry.message).join(", ");
+  const data = error.response?.data;
+  const isObject = typeof data === "object" && data !== null;
+  
+  const details = isObject ? data.errors : undefined;
+  const detailsMessage = details?.map((entry: any) => entry.message).join(", ");
   const message =
     detailsMessage ||
-    error.response?.data?.message ||
+    (isObject ? data.message : undefined) ||
     error.message ||
     "Request failed";
 
   return new HttpError(message, error.response?.status, details);
 }
 
+const getBaseUrl = () => {
+  const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  return url.endsWith("/") ? url : `${url}/`;
+};
+
 export const http = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: getBaseUrl(),
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",

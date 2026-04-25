@@ -38,7 +38,7 @@ export function LandingHero() {
             style={{ lineHeight: 1.7 }}
           >
             Foody connects restaurants with charities and customers to ensure
-            every surplus meal finds a purpose ? donated to those in need or
+            every surplus meal finds a purpose — donated to those in need or
             sold at a discount before it goes to waste.
           </p>
           <div className="flex flex-wrap gap-3 mb-8">

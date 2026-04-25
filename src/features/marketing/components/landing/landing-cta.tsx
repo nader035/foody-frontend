@@ -30,7 +30,7 @@ export function LandingCta() {
               Ready to eliminate food waste?
             </motion.h2>
             <motion.p initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className="text-white/60 mb-8 max-w-md mx-auto">
-              Join 320+ restaurants already making a difference. Start your free trial today ? no credit card required.
+              Join 320+ restaurants already making a difference. Start your free trial today — no credit card required.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }} className="flex justify-center gap-3 flex-wrap">
               <button onClick={() => navigate.push("/manager")} className="bg-[#25A05F] hover:bg-[#1e8a4f] text-white px-8 py-3.5 rounded-xl transition-colors flex items-center gap-2" style={{ fontWeight: 700 }}>
