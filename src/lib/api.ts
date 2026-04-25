@@ -74,6 +74,7 @@ export interface ListQuery {
   limit?: number;
   sortBy?: string;
   sortDirection?: "asc" | "desc";
+  [key: string]: QueryValue | undefined;
 }
 
 export interface MealListQuery extends ListQuery {
