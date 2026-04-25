@@ -6,7 +6,7 @@ const stats = [
   { value: "98.5%", label: "Food waste reduction" },
   { value: "~45k", label: "Meals saved monthly" },
   { value: "320+", label: "Restaurant partners" },
-  { value: "4.9?", label: "Average rating" },
+  { value: "4.9", label: "Average rating" },
 ];
 
 export function LandingStats() {
