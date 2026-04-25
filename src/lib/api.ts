@@ -1,3 +1,6 @@
+import type { Method } from "axios";
+import { http } from "@/lib/http";
+
 export type UserRole = "customer" | "manager" | "staff" | "charity";
 
 export interface RegisterPayload {
@@ -296,20 +299,51 @@ export interface UserProfile {
 }
 
 interface AuthData {
-  token: string;
   user: UserProfile;
 }
 
 interface PasswordResetData {
   accepted: boolean;
-  resetToken: string | null;
 }
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "https://foody-backend-production.up.railway.app/api/v1";
-
 const authCookieMaxAgeSeconds = 60 * 60 * 24 * 7;
+
+type QueryValue = string | number | boolean | undefined;
+
+type QueryParams = Record<string, QueryValue>;
+
+export const API_ENDPOINTS = {
+  users: {
+    base: "/users",
+    register: "/users/register",
+    login: "/users/login",
+    forgotPassword: "/users/forgot-password",
+    resetPassword: "/users/reset-password",
+    me: "/users/me",
+    changePassword: "/users/change-password",
+    staff: "/users/staff",
+    charities: "/users/charities",
+    status: (userId: string) => `/users/${userId}/status`,
+  },
+  meals: {
+    base: "/meals",
+    byId: (mealId: string) => `/meals/${mealId}`,
+    status: (mealId: string) => `/meals/${mealId}/status`,
+  },
+  orders: {
+    base: "/orders",
+    checkout: "/orders/checkout",
+    status: (orderId: string) => `/orders/${orderId}/status`,
+  },
+  donations: {
+    base: "/donations",
+    status: (donationId: string) => `/donations/${donationId}/status`,
+  },
+  branches: {
+    base: "/branches",
+    byId: (branchId: string) => `/branches/${branchId}`,
+  },
+} as const;
 
 function writeCookie(
   name: string,
@@ -331,224 +365,165 @@ function deleteCookie(name: string) {
   document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax`;
 }
 
-function readCookie(name: string) {
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  const cookie = document.cookie
-    .split(";")
-    .map((entry) => entry.trim())
-    .find((entry) => entry.startsWith(`${name}=`));
-
-  if (!cookie) {
-    return null;
-  }
-
-  return decodeURIComponent(cookie.slice(name.length + 1));
-}
-
-function buildQueryString<T extends object>(query?: T) {
-  if (!query) {
-    return "";
-  }
-
-  const params = new URLSearchParams();
-
-  Object.entries(query as Record<string, unknown>).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === "") {
-      return;
-    }
-    params.set(key, String(value));
+async function request<TResponse, TBody = unknown>(config: {
+  method?: Method;
+  url: string;
+  headers?: Record<string, string>;
+  data?: TBody;
+  params?: QueryParams;
+}): Promise<TResponse> {
+  const response = await http.request<ApiEnvelope<TResponse>>({
+    method: config.method ?? "GET",
+    url: config.url,
+    headers: config.headers,
+    data: config.data,
+    params: config.params,
   });
 
-  const serialized = params.toString();
-  return serialized ? `?${serialized}` : "";
-}
-
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(`${baseUrl}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options?.headers || {}),
-    },
-  });
-
-  const rawText = await response.text();
-  let payload: ApiEnvelope<T> | null = null;
-
-  try {
-    payload = rawText ? (JSON.parse(rawText) as ApiEnvelope<T>) : null;
-  } catch {
-    payload = null;
-  }
-
-  if (!response.ok || !payload?.success) {
+  const payload = response.data;
+  if (!payload?.success) {
     const fieldErrors = payload?.errors
-      ?.map((e) => `${e.path}: ${e.message}`)
+      ?.map((entry) => `${entry.path}: ${entry.message}`)
       .join(" | ");
-    throw new Error(
-      fieldErrors ||
-        payload?.message ||
-        (rawText && !payload ? rawText : "Request failed"),
-    );
+
+    throw new Error(fieldErrors || payload?.message || "Request failed");
   }
 
   return payload.data;
 }
 
-function getAuthHeaders(): Record<string, string> {
-  const token = getAuthToken();
-  if (!token) {
-    return {};
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
-
 export async function apiRegister(body: RegisterPayload): Promise<AuthData> {
-  return request<AuthData>("/users/register", {
+  return request<AuthData, RegisterPayload>({
     method: "POST",
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.register,
+    data: body,
   });
 }
 
 export async function apiCreateStaff(
   body: CreateStaffPayload,
 ): Promise<UserProfile> {
-  return request<UserProfile>("/users/staff", {
+  return request<UserProfile, CreateStaffPayload>({
     method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.staff,
+    data: body,
   });
 }
 
 export async function apiLogin(body: LoginPayload): Promise<AuthData> {
-  return request<AuthData>("/users/login", {
+  return request<AuthData, LoginPayload>({
     method: "POST",
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.login,
+    data: body,
   });
 }
 
 export async function apiForgotPassword(
   body: ForgotPasswordPayload,
 ): Promise<PasswordResetData> {
-  return request<PasswordResetData>("/users/forgot-password", {
+  return request<PasswordResetData, ForgotPasswordPayload>({
     method: "POST",
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.forgotPassword,
+    data: body,
   });
 }
 
 export async function apiResetPassword(
   body: ResetPasswordPayload,
 ): Promise<AuthData> {
-  return request<AuthData>("/users/reset-password", {
+  return request<AuthData, ResetPasswordPayload>({
     method: "POST",
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.resetPassword,
+    data: body,
   });
 }
 
 export async function apiGetMe() {
-  return request<UserProfile>("/users/me", {
-    method: "GET",
-    headers: getAuthHeaders(),
+  return request<UserProfile>({
+    url: API_ENDPOINTS.users.me,
   });
 }
 
 export async function apiUpdateMe(body: UpdateProfilePayload) {
-  return request<UserProfile>("/users/me", {
+  return request<UserProfile, UpdateProfilePayload>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.me,
+    data: body,
   });
 }
 
 export async function apiChangePassword(body: ChangePasswordPayload) {
-  return request<AuthData>("/users/change-password", {
+  return request<AuthData, ChangePasswordPayload>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.changePassword,
+    data: body,
   });
 }
 
 export async function apiListMeals(query?: MealListQuery) {
-  return request<PaginatedData<SurplusMeal>>(
-    `/meals${buildQueryString(query)}`,
-    {
-      method: "GET",
-      headers: getAuthHeaders(),
-    },
-  );
+  return request<PaginatedData<SurplusMeal>>({
+    url: API_ENDPOINTS.meals.base,
+    params: query,
+  });
 }
 
 export async function apiGetMealById(mealId: string) {
-  return request<SurplusMeal>(`/meals/${mealId}`, {
-    method: "GET",
-    headers: getAuthHeaders(),
+  return request<SurplusMeal>({
+    url: API_ENDPOINTS.meals.byId(mealId),
   });
 }
 
 export async function apiCreateOrder(body: CreateOrderPayload) {
-  return request<CustomerOrder>("/orders", {
+  return request<CustomerOrder, CreateOrderPayload>({
     method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.orders.base,
+    data: body,
   });
 }
 
 export async function apiListOrders(query?: OrderListQuery) {
-  return request<PaginatedData<CustomerOrder>>(
-    `/orders${buildQueryString(query)}`,
-    {
-      method: "GET",
-      headers: getAuthHeaders(),
-    },
-  );
+  return request<PaginatedData<CustomerOrder>>({
+    url: API_ENDPOINTS.orders.base,
+    params: query,
+  });
 }
 
 export async function apiCheckoutOrders(body: CheckoutOrdersPayload) {
-  return request<CheckoutOrdersResult>("/orders/checkout", {
+  return request<CheckoutOrdersResult, CheckoutOrdersPayload>({
     method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.orders.checkout,
+    data: body,
   });
 }
 
 export async function apiListDonations(query?: DonationListQuery) {
-  return request<PaginatedData<Donation>>(
-    `/donations${buildQueryString(query)}`,
-    {
-      method: "GET",
-      headers: getAuthHeaders(),
-    },
-  );
+  return request<PaginatedData<Donation>>({
+    url: API_ENDPOINTS.donations.base,
+    params: query,
+  });
 }
 
 export async function apiUpdateDonationStatus(
   donationId: string,
   body: UpdateDonationStatusPayload,
 ) {
-  return request<Donation>(`/donations/${donationId}/status`, {
+  return request<Donation, UpdateDonationStatusPayload>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.donations.status(donationId),
+    data: body,
   });
 }
 
 export async function apiListUsers(role?: UserRole) {
-  return request<CharityUser[]>(`/users${buildQueryString({ role })}`, {
-    method: "GET",
-    headers: getAuthHeaders(),
+  return request<CharityUser[]>({
+    url: API_ENDPOINTS.users.base,
+    params: { role },
   });
 }
 
 export async function apiListCharities() {
-  return request<CharityUser[]>("/users/charities", {
-    method: "GET",
-    headers: getAuthHeaders(),
+  return request<CharityUser[]>({
+    url: API_ENDPOINTS.users.charities,
   });
 }
 
@@ -556,25 +531,25 @@ export async function apiUpdateUserStatus(
   userId: string,
   body: UpdateUserStatusPayload,
 ) {
-  return request<CharityUser>(`/users/${userId}/status`, {
+  return request<CharityUser, UpdateUserStatusPayload>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.users.status(userId),
+    data: body,
   });
 }
 
 export async function apiListBranches(query?: BranchListQuery) {
-  return request<PaginatedData<Branch>>(`/branches${buildQueryString(query)}`, {
-    method: "GET",
-    headers: getAuthHeaders(),
+  return request<PaginatedData<Branch>>({
+    url: API_ENDPOINTS.branches.base,
+    params: query,
   });
 }
 
 export async function apiCreateBranch(body: CreateBranchPayload) {
-  return request<Branch>("/branches", {
+  return request<Branch, CreateBranchPayload>({
     method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.branches.base,
+    data: body,
   });
 }
 
@@ -582,10 +557,10 @@ export async function apiUpdateBranch(
   branchId: string,
   body: UpdateBranchPayload,
 ) {
-  return request<Branch>(`/branches/${branchId}`, {
+  return request<Branch, UpdateBranchPayload>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.branches.byId(branchId),
+    data: body,
   });
 }
 
@@ -595,10 +570,10 @@ export async function apiCreateMeal(
     "_id" | "createdBy" | "createdAt" | "updatedAt" | "quantityAvailable"
   >,
 ) {
-  return request<SurplusMeal>("/meals", {
+  return request<SurplusMeal>({
     method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.meals.base,
+    data: body,
   });
 }
 
@@ -608,42 +583,35 @@ export async function apiUpdateMeal(
     Omit<SurplusMeal, "_id" | "createdBy" | "createdAt" | "updatedAt">
   >,
 ) {
-  return request<SurplusMeal>(`/meals/${mealId}`, {
+  return request<SurplusMeal>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.meals.byId(mealId),
+    data: body,
   });
 }
 
 export async function apiChangeMealStatus(mealId: string, status: string) {
-  return request<SurplusMeal>(`/meals/${mealId}/status`, {
+  return request<SurplusMeal, { status: string }>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ status }),
+    url: API_ENDPOINTS.meals.status(mealId),
+    data: { status },
   });
 }
 
 export async function apiCreateDonation(body: CreateDonationPayload) {
-  return request<Donation>("/donations", {
+  return request<Donation, CreateDonationPayload>({
     method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    url: API_ENDPOINTS.donations.base,
+    data: body,
   });
 }
 
 export async function apiChangeOrderStatus(orderId: string, status: string) {
-  return request<CustomerOrder>(`/orders/${orderId}/status`, {
+  return request<CustomerOrder, { status: string }>({
     method: "PATCH",
-    headers: getAuthHeaders(),
-    body: JSON.stringify({ status }),
+    url: API_ENDPOINTS.orders.status(orderId),
+    data: { status },
   });
-}
-
-export function saveAuthToken(token: string) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("foody_token", token);
-    writeCookie("foody_token", token);
-  }
 }
 
 export function saveAuthUser(user: UserProfile) {
@@ -653,29 +621,8 @@ export function saveAuthUser(user: UserProfile) {
   }
 }
 
-export function saveAuthSession(token: string, user: UserProfile) {
-  saveAuthToken(token);
+export function saveAuthSession(user: UserProfile) {
   saveAuthUser(user);
-}
-
-export function getAuthToken() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const stored = localStorage.getItem("foody_token");
-  if (stored) {
-    return stored;
-  }
-
-  return readCookie("foody_token");
-}
-
-export function clearAuthToken() {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("foody_token");
-    deleteCookie("foody_token");
-  }
 }
 
 export function getAuthUser() {
@@ -697,9 +644,7 @@ export function getAuthUser() {
 
 export function clearAuthSession() {
   if (typeof window !== "undefined") {
-    localStorage.removeItem("foody_token");
     localStorage.removeItem("foody_user");
-    deleteCookie("foody_token");
     deleteCookie("foody_role");
   }
 }

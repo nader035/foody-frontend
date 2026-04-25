@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ImageWithFallback } from "@/components/shared/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/shared/media";
 import {
   Clock,
   MapPin,
@@ -21,10 +21,10 @@ import {
   apiGetMealById,
   apiListMeals,
   type SurplusMeal,
-} from "@/lib/api-client";
+} from "@/features/customer/api";
+import { CustomerNav } from "@/features/customer/components/customer-nav";
 import { useCart } from "@/features/customer/hooks/cart-context";
 import { useWishlist } from "@/features/customer/hooks/wishlist-context";
-import { CustomerNav } from "@/features/customer/components/customer-nav";
 
 function Countdown({ mins: initialMins }: { mins: number }) {
   const [secs, setSecs] = useState(initialMins * 60);

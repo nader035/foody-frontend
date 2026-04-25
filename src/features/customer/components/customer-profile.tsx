@@ -18,12 +18,11 @@ import {
   apiGetMe,
   apiListOrders,
   apiUpdateMe,
-  clearAuthSession,
-  getAuthToken,
   type CustomerOrder,
   type UserProfile,
-} from "@/lib/api-client";
+} from "@/features/customer/api";
 import { CustomerNav } from "@/features/customer/components/customer-nav";
+import { clearAuthSession, getAuthUser } from "@/platform/auth/session.client";
 
 type Tab = "profile" | "orders";
 
@@ -61,7 +60,7 @@ export function CustomerProfile() {
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    if (!getAuthToken()) {
+    if (!getAuthUser()) {
       navigate.push("/auth");
     }
   }, [navigate]);

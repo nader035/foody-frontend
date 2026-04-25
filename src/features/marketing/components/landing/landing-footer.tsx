@@ -1,4 +1,4 @@
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 
 export function LandingFooter() {
   return (

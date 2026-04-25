@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 import {
   apiListMeals,
   apiCreateMeal,
@@ -11,13 +11,13 @@ import {
   apiListBranches,
   apiGetMe,
   apiUpdateMe,
-  clearAuthSession,
   type SurplusMeal,
   type Donation,
   type CharityUser,
   type UserProfile,
   type Branch,
-} from "@/lib/api-client";
+} from "@/features/staff/api";
+import { clearAuthSession } from "@/platform/auth/session.client";
 import {
   Clock,
   Plus,

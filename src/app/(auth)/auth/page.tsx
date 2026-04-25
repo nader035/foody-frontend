@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthRoleSelect } from '@/features/auth/components/auth-role-select';
+import { AuthRoleSelect } from "@/features/auth";
 
 export const metadata: Metadata = {
   title: "Choose Role",

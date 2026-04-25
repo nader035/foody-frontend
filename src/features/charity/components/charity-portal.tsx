@@ -9,12 +9,11 @@ import {
   apiListMeals,
   apiUpdateDonationStatus,
   apiUpdateMe,
-  clearAuthSession,
-  getAuthToken,
   type Branch,
   type SurplusMeal,
   type UserProfile,
-} from "@/lib/api-client";
+} from "@/features/charity/api";
+import { clearAuthSession, getAuthUser } from "@/platform/auth/session.client";
 import { DashboardTab } from "./charity-portal/dashboard-tab";
 import { DonationsTab } from "./charity-portal/donations-tab";
 import { HistoryTab } from "./charity-portal/history-tab";
@@ -101,7 +100,7 @@ export function CharityPortal() {
   }, []);
 
   useEffect(() => {
-    if (!getAuthToken()) {
+    if (!getAuthUser()) {
       navigate.push("/auth");
       return;
     }

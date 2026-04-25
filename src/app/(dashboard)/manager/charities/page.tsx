@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ManagerCharities } from '@/features/manager/components/manager-charities';
+import { ManagerCharities } from "@/features/manager";
 
 export const metadata: Metadata = {
   title: "Manager Charities",

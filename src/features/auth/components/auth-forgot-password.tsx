@@ -2,8 +2,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
-import { apiForgotPassword } from "@/lib/api-client";
+import { Logo } from "@/shared/branding";
+import { apiForgotPassword } from "@/features/auth/api";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,7 +21,6 @@ export function AuthForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [devToken, setDevToken] = useState("");
   const {
     register,
     handleSubmit,
@@ -35,14 +34,10 @@ export function AuthForgotPassword() {
 
   const onSubmit = async (values: ForgotPasswordFormValues) => {
     setErrorMessage("");
-    setDevToken("");
 
     try {
       setLoading(true);
-      const result = await apiForgotPassword(values);
-      if (result.resetToken) {
-        setDevToken(result.resetToken);
-      }
+      await apiForgotPassword(values);
       setSentToEmail(values.email);
       setSent(true);
     } catch (error) {
@@ -185,29 +180,6 @@ export function AuthForgotPassword() {
               <p className="text-[#0E3442] mb-8" style={{ fontWeight: 600 }}>
                 {sentToEmail}
               </p>
-
-              {devToken && (
-                <div className="mb-6 rounded-xl border border-[#25A05F]/20 bg-[#25A05F]/5 px-4 py-3 text-left">
-                  <p
-                    className="text-xs text-[#155433] mb-1"
-                    style={{ fontWeight: 700 }}
-                  >
-                    Development reset token
-                  </p>
-                  <p className="text-[11px] text-[#155433] break-all">
-                    {devToken}
-                  </p>
-                  <button
-                    onClick={() =>
-                      navigate.push(`/reset-password?token=${devToken}`)
-                    }
-                    className="mt-3 text-xs text-[#25A05F] hover:underline"
-                    style={{ fontWeight: 700 }}
-                  >
-                    Continue to reset password
-                  </button>
-                </div>
-              )}
 
               <button
                 onClick={() => setSent(false)}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthForgotPassword } from '@/features/auth/components/auth-forgot-password';
+import { AuthForgotPassword } from "@/features/auth";
 
 export const metadata: Metadata = {
   title: "Forgot Password",

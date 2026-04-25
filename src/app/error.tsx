@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { AlertTriangle, ArrowLeft, Home, RotateCcw } from "lucide-react";
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 
 type ErrorPageProps = {
   error: Error & { digest?: string };

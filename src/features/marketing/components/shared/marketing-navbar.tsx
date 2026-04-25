@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 
 type NavLabel = "Product" | "Solutions" | "Pricing" | "About us";
 

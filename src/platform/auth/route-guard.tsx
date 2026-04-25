@@ -2,12 +2,8 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getAuthToken, getAuthUser } from "@/lib/api-client";
-import {
-  getRequiredRole,
-  isGuestOnlyRoute,
-  roleHome,
-} from "@/lib/route-access";
+import { getAuthUser } from "./session.client";
+import { getRequiredRole, isGuestOnlyRoute, roleHome } from "./route-access";
 
 export function RouteGuard() {
   const router = useRouter();
@@ -18,12 +14,12 @@ export function RouteGuard() {
       return;
     }
 
-    const token = getAuthToken();
     const user = getAuthUser();
+    const hasSession = Boolean(user);
     const requiredRole = getRequiredRole(pathname);
 
     if (requiredRole) {
-      if (!token) {
+      if (!hasSession) {
         router.replace("/auth");
         return;
       }
@@ -35,11 +31,10 @@ export function RouteGuard() {
       return;
     }
 
-    if (isGuestOnlyRoute(pathname) && token && user?.role) {
+    if (isGuestOnlyRoute(pathname) && hasSession && user?.role) {
       router.replace(roleHome[user.role]);
     }
   }, [pathname, router]);
 
   return null;
 }
-

@@ -2,11 +2,11 @@
 
 import { useMemo, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 import { Heart, ShoppingBag, User, ArrowLeft } from "lucide-react";
-import { getAuthToken } from "@/lib/api-client";
 import { useCart } from "@/features/customer/hooks/cart-context";
 import { useWishlist } from "@/features/customer/hooks/wishlist-context";
+import { getAuthUser } from "@/platform/auth/session.client";
 
 type NavKey = "marketplace" | "wishlist" | "cart" | "profile";
 
@@ -62,7 +62,7 @@ export function CustomerNav({ active, title, backHref }: CustomerNavProps) {
       if (typeof window === "undefined") {
         return false;
       }
-      return Boolean(getAuthToken());
+      return Boolean(getAuthUser());
     },
     () => false,
   );

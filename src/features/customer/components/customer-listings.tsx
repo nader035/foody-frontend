@@ -10,11 +10,11 @@ import {
   SlidersHorizontal,
   Leaf,
 } from "lucide-react";
-import { ImageWithFallback } from "@/components/shared/figma/ImageWithFallback";
-import { apiListMeals, type SurplusMeal } from "@/lib/api-client";
+import { apiListMeals, type SurplusMeal } from "@/features/customer/api";
+import { CustomerNav } from "@/features/customer/components/customer-nav";
 import { useCart } from "@/features/customer/hooks/cart-context";
 import { useWishlist } from "@/features/customer/hooks/wishlist-context";
-import { CustomerNav } from "@/features/customer/components/customer-nav";
+import { ImageWithFallback } from "@/shared/media";
 
 const sortOptions = [
   "Recommended",

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 import {
   LayoutDashboard,
   GitBranch,

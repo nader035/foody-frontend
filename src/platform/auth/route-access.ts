@@ -1,4 +1,4 @@
-import type { UserRole } from "@/lib/api-client";
+import type { UserRole } from "@/features/auth/types";
 
 export const roleHome: Record<UserRole, string> = {
   customer: "/customer",

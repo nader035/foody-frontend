@@ -3,8 +3,9 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/shared/Logo";
-import { apiRegister, saveAuthSession } from "@/lib/api-client";
+import { Logo } from "@/shared/branding";
+import { apiRegister } from "@/features/auth/api";
+import { saveAuthSession } from "@/platform/auth/session.client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -79,7 +80,7 @@ const roleConfig: Record<
     emailPlaceholder: "you@restaurant.com",
     leftTitle: "Join your\nbranch team",
     leftDesc:
-      "Get set up in seconds. Your manager has already configured everything — just start logging surplus.",
+      "Get set up in seconds. Your manager has already configured everything â€” just start logging surplus.",
     perks: [
       "Quick surplus logging in seconds",
       "No setup required, just join",
@@ -206,7 +207,7 @@ export function AuthSignup() {
     setValue("role", role as SignupFormValues["role"]);
   }, [role, setValue]);
 
-  // Staff cannot self-register — redirect to login
+  // Staff cannot self-register â€” redirect to login
   if (role === "staff") {
     return (
       <div
@@ -270,7 +271,7 @@ export function AuthSignup() {
         organizationWebsite: values.organizationWebsite || undefined,
       });
 
-      saveAuthSession(result.token, result.user);
+      saveAuthSession(result.user);
       navigate.push(roleConfig[result.user.role]?.redirect || config.redirect);
     } catch (error) {
       setErrorMessage(
@@ -372,7 +373,7 @@ export function AuthSignup() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <input type="hidden" {...register("role")} />
-            {/* Full Name — all roles */}
+            {/* Full Name â€” all roles */}
             <div>
               <label
                 className="text-gray-600 text-sm block mb-1.5"
@@ -399,7 +400,7 @@ export function AuthSignup() {
               )}
             </div>
 
-            {/* Restaurant Name — manager only */}
+            {/* Restaurant Name â€” manager only */}
             {needsRestaurant && (
               <div>
                 <label
@@ -428,7 +429,7 @@ export function AuthSignup() {
               </div>
             )}
 
-            {/* Branch Name — staff only */}
+            {/* Branch Name â€” staff only */}
             {role === "staff" && (
               <div>
                 <label
@@ -457,7 +458,7 @@ export function AuthSignup() {
               </div>
             )}
 
-            {/* Charity fields — charity only */}
+            {/* Charity fields â€” charity only */}
             {isCharity && (
               <>
                 <div>
@@ -540,7 +541,7 @@ export function AuthSignup() {
               </>
             )}
 
-            {/* Email — all roles */}
+            {/* Email â€” all roles */}
             <div>
               <label
                 className="text-gray-600 text-sm block mb-1.5"
@@ -567,7 +568,7 @@ export function AuthSignup() {
               )}
             </div>
 
-            {/* Phone — charity & manager */}
+            {/* Phone â€” charity & manager */}
             {(isCharity || role === "manager") && (
               <div>
                 <label
@@ -596,7 +597,7 @@ export function AuthSignup() {
               </div>
             )}
 
-            {/* Password — all roles */}
+            {/* Password â€” all roles */}
             <div>
               <label
                 className="text-gray-600 text-sm block mb-1.5"

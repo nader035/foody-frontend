@@ -1,4 +1,4 @@
-import type { Donation } from "@/lib/api-client";
+import type { Donation } from "@/features/charity/api";
 
 export type Tab =
   | "dashboard"

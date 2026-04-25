@@ -1,8 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Logo } from "@/components/shared/Logo";
-import { ImageWithFallback } from "@/components/shared/figma/ImageWithFallback";
 import { MarketingNavbar } from "@/features/marketing/components/shared/marketing-navbar";
+import { Logo } from "@/shared/branding";
+import { ImageWithFallback } from "@/shared/media";
 import {
   ArrowRight,
   Heart,

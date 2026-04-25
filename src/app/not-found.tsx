@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Compass, Home } from "lucide-react";
-import { Logo } from "@/components/shared/Logo";
+import { Logo } from "@/shared/branding";
 
 export default function NotFound() {
   return (

@@ -21,7 +21,7 @@ import {
   apiUpdateMe,
   type Branch,
   type UserProfile,
-} from "@/lib/api-client";
+} from "@/features/manager/api";
 
 export function ManagerSettings() {
   const [activeTab, setActiveTab] = useState("distribution");

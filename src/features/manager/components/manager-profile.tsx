@@ -22,7 +22,7 @@ import {
   apiUpdateMe,
   apiChangePassword,
   type UserProfile,
-} from "@/lib/api-client";
+} from "@/features/manager/api";
 
 export function ManagerProfile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ManagerSettings } from '@/features/manager/components/manager-settings';
+import { ManagerSettings } from "@/features/manager";
 
 export const metadata: Metadata = {
   title: "Manager Settings",

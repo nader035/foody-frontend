@@ -2,11 +2,11 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import type { SurplusMeal } from "@/features/customer/api";
 import { CustomerNav } from "@/features/customer/components/customer-nav";
 import { useWishlist } from "@/features/customer/hooks/wishlist-context";
 import { useCart } from "@/features/customer/hooks/cart-context";
-import type { SurplusMeal } from "@/lib/api-client";
-import { ImageWithFallback } from "@/components/shared/figma/ImageWithFallback";
+import { ImageWithFallback } from "@/shared/media";
 import { Heart, Clock, Trash2, Search, MapPin } from "lucide-react";
 
 function formatEgp(amount: number) {
