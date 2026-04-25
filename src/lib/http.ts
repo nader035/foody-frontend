@@ -48,7 +48,8 @@ function toHttpError(error: AxiosError<ApiErrorPayload>) {
 }
 
 const getBaseUrl = () => {
-  const url = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const url = envUrl || "https://foody-backend-production.up.railway.app/api/v1";
   return url.endsWith("/") ? url : `${url}/`;
 };
 
