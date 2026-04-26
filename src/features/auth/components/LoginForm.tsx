@@ -295,12 +295,6 @@ export function LoginForm() {
             </button>
           </form>
 
-          <div className="mt-6 flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-gray-400 text-xs">or continue with</span>
-            <div className="flex-1 h-px bg-gray-200" />
-          </div>
-
           <p className="mt-8 text-center text-gray-500 text-sm">
             {role === "staff" ? (
               <>
