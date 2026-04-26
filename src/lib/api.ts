@@ -29,6 +29,7 @@ export interface CreateStaffPayload {
 export interface LoginPayload {
   email: string;
   password: string;
+  role?: UserRole;
 }
 
 export interface ForgotPasswordPayload {

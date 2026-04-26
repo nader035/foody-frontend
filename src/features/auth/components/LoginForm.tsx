@@ -95,7 +95,10 @@ export function LoginForm() {
   const onSubmit = async (values: LoginFormValues) => {
     loginMutation.reset();
     try {
-      const response = await loginMutation.mutateAsync(values);
+      const response = await loginMutation.mutateAsync({
+        ...values,
+        role: role as any,
+      });
       router.push(roleConfig[response.user.role]?.redirect || config.redirect);
     } catch {
       return;
