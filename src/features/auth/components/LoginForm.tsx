@@ -301,21 +301,6 @@ export function LoginForm() {
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <button
-              className="bg-white border border-gray-200 rounded-xl py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-              style={{ fontWeight: 600 }}
-            >
-              Google
-            </button>
-            <button
-              className="bg-white border border-gray-200 rounded-xl py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-              style={{ fontWeight: 600 }}
-            >
-              Microsoft
-            </button>
-          </div>
-
           <p className="mt-8 text-center text-gray-500 text-sm">
             {role === "staff" ? (
               <>
