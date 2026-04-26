@@ -12,6 +12,9 @@ export const protectedRolePrefixes: Array<{ prefix: string; role: UserRole }> =
     { prefix: "/manager", role: "manager" },
     { prefix: "/staff", role: "staff" },
     { prefix: "/charity", role: "charity" },
+    { prefix: "/customer/profile", role: "customer" },
+    { prefix: "/customer/wishlist", role: "customer" },
+    { prefix: "/customer/cart", role: "customer" },
   ];
 
 export const guestOnlyPrefixes = [

@@ -43,7 +43,7 @@ export function CustomerNav({ active, title, backHref }: CustomerNavProps) {
   const { totalItems: cartCount } = useCart();
   const { totalItems: wishlistCount } = useWishlist();
 
-  const isAuthenticated = useSyncExternalStore(
+  const user = useSyncExternalStore(
     (onStoreChange) => {
       if (typeof window === "undefined") {
         return () => {};
@@ -60,12 +60,33 @@ export function CustomerNav({ active, title, backHref }: CustomerNavProps) {
     },
     () => {
       if (typeof window === "undefined") {
-        return false;
+        return null;
       }
-      return Boolean(getAuthUser());
+      return getAuthUser();
     },
-    () => false,
+    () => null,
   );
+
+  const isAuthenticated = Boolean(user);
+  const isCustomer = user?.role === "customer";
+  
+  const getProfileHref = () => {
+    if (!user) return "/auth";
+    switch (user.role) {
+      case "manager": return "/manager";
+      case "staff": return "/staff";
+      case "charity": return "/charity";
+      case "customer": return "/customer/profile";
+      default: return "/auth";
+    }
+  };
+
+  const visibleNavItems = useMemo(() => {
+    if (!isCustomer && isAuthenticated) {
+      return navItems.filter((item) => item.key === "marketplace");
+    }
+    return navItems;
+  }, [isCustomer, isAuthenticated]);
 
   const rightTitle = useMemo(() => {
     if (active === "marketplace") {
@@ -111,7 +132,7 @@ export function CustomerNav({ active, title, backHref }: CustomerNavProps) {
         </div>
 
         <nav className="hidden md:flex items-center gap-1 bg-[#F5F7FA] p-1 rounded-xl border border-gray-100">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <button
               key={item.key}
               onClick={() => router.push(item.href)}
@@ -128,39 +149,41 @@ export function CustomerNav({ active, title, backHref }: CustomerNavProps) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-              active === "wishlist"
-                ? "bg-[#25A05F]/10 text-[#25A05F]"
-                : "text-gray-500 hover:text-[#25A05F]"
-            }`}
-            onClick={() => router.push("/customer/wishlist")}
-            aria-label="Wishlist"
-          >
-            <Heart
-              size={16}
-              fill={active === "wishlist" ? "currentColor" : "none"}
-            />
-            <Counter value={wishlistCount} />
-          </button>
+          {(!isAuthenticated || isCustomer) && (
+            <>
+              <button
+                className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                  active === "wishlist"
+                    ? "bg-[#25A05F]/10 text-[#25A05F]"
+                    : "text-gray-500 hover:text-[#25A05F]"
+                }`}
+                onClick={() => router.push("/customer/wishlist")}
+                aria-label="Wishlist"
+              >
+                <Heart
+                  size={16}
+                  fill={active === "wishlist" ? "currentColor" : "none"}
+                />
+                <Counter value={wishlistCount} />
+              </button>
+
+              <button
+                className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+                  active === "cart"
+                    ? "bg-[#25A05F]/10 text-[#25A05F]"
+                    : "text-gray-500 hover:text-[#25A05F]"
+                }`}
+                onClick={() => router.push("/customer/cart")}
+                aria-label="Cart"
+              >
+                <ShoppingBag size={16} />
+                <Counter value={cartCount} />
+              </button>
+            </>
+          )}
 
           <button
-            className={`relative w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
-              active === "cart"
-                ? "bg-[#25A05F]/10 text-[#25A05F]"
-                : "text-gray-500 hover:text-[#25A05F]"
-            }`}
-            onClick={() => router.push("/customer/cart")}
-            aria-label="Cart"
-          >
-            <ShoppingBag size={16} />
-            <Counter value={cartCount} />
-          </button>
-
-          <button
-            onClick={() =>
-              router.push(isAuthenticated ? "/customer/profile" : "/auth")
-            }
+            onClick={() => router.push(getProfileHref())}
             className={
               isAuthenticated
                 ? "w-9 h-9 rounded-full bg-[#25A05F]/10 flex items-center justify-center text-[#25A05F] hover:bg-[#25A05F] hover:text-white transition-colors"
@@ -179,7 +202,7 @@ export function CustomerNav({ active, title, backHref }: CustomerNavProps) {
 
       <div className="md:hidden border-t border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-6 py-2 flex items-center gap-2 overflow-x-auto">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <button
               key={item.key}
               onClick={() => router.push(item.href)}
