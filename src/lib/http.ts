@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { clearAuthSession } from "@/platform/auth/session.client";
 
 interface ApiErrorDetail {
   path: string;
@@ -21,16 +22,7 @@ export class HttpError extends Error {
   }
 }
 
-function clearClientAuthState() {
-  if (typeof window === "undefined") {
-    return;
-  }
 
-  localStorage.removeItem("foody_user");
-  localStorage.removeItem("foody_token");
-  document.cookie = "foody_role=; Path=/; Max-Age=0; SameSite=Lax";
-  document.cookie = "foody_token=; Path=/; Max-Age=0; SameSite=Lax";
-}
 
 function toHttpError(error: AxiosError<ApiErrorPayload>) {
   const data = error.response?.data;
@@ -75,7 +67,7 @@ http.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ApiErrorPayload>) => {
     if (error.response?.status === 401) {
-      clearClientAuthState();
+      clearAuthSession();
     }
 
     return Promise.reject(toHttpError(error));
