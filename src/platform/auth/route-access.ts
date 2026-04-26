@@ -1,5 +1,12 @@
 import type { UserRole } from "@/features/auth/types";
 
+export const USER_ROLES: UserRole[] = [
+  "customer",
+  "manager",
+  "staff",
+  "charity",
+];
+
 export const roleHome: Record<UserRole, string> = {
   customer: "/customer",
   manager: "/manager",
@@ -36,4 +43,14 @@ export function getRequiredRole(pathname: string) {
 
 export function isGuestOnlyRoute(pathname: string) {
   return guestOnlyPrefixes.some((prefix) => isPathMatch(pathname, prefix));
+}
+
+export function isUserRole(
+  value: string | null | undefined,
+): value is UserRole {
+  if (!value) {
+    return false;
+  }
+
+  return USER_ROLES.includes(value as UserRole);
 }

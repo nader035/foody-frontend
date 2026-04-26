@@ -1,6 +1,8 @@
 "use client";
 
 import type { UserProfile } from "@/features/auth/types";
+import type { UserRole } from "@/features/auth/types";
+import { isUserRole } from "./route-access";
 
 const authCookieMaxAgeSeconds = 60 * 60 * 24 * 7;
 
@@ -71,11 +73,19 @@ export function getAuthRole() {
   }
 
   const encodedValue = raw.slice("foody_role=".length);
-  try {
-    return decodeURIComponent(encodedValue);
-  } catch {
-    return encodedValue;
+  const decodedValue = (() => {
+    try {
+      return decodeURIComponent(encodedValue);
+    } catch {
+      return encodedValue;
+    }
+  })();
+
+  if (!isUserRole(decodedValue)) {
+    return null;
   }
+
+  return decodedValue;
 }
 
 export function clearAuthSession() {
