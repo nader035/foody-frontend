@@ -154,7 +154,7 @@ export function CustomerProfile() {
   const logout = useLogout();
 
   function handleSignOut() {
-    logout();
+    logout.mutate();
   }
 
   if (loading) {

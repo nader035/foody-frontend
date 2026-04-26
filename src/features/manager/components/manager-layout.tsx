@@ -32,7 +32,7 @@ export function ManagerLayout({ children }: { children: React.ReactNode }) {
   const logout = useLogout();
 
   const handleLogout = () => {
-    logout();
+    logout.mutate();
   };
 
   return (

@@ -201,7 +201,7 @@ export function CharityPortal() {
   const logout = useLogout();
 
   function handleSignOut() {
-    logout();
+    logout.mutate();
   }
 
   const unreadCount = notifications.filter(

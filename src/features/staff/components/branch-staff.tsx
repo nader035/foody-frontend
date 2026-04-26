@@ -481,7 +481,7 @@ export function BranchStaff() {
 
   const logout = useLogout();
   const handleLogout = () => {
-    logout();
+    logout.mutate();
   };
 
   // Stats Logic
