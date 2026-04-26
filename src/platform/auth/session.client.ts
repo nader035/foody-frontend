@@ -26,10 +26,21 @@ function deleteCookie(name: string) {
   document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax`;
 }
 
+let cachedUser: UserProfile | null = null;
+let cachedRaw: string | null = null;
+
 export function saveAuthUser(user: UserProfile) {
   if (typeof window !== "undefined") {
-    localStorage.setItem("foody_user", JSON.stringify(user));
+    const raw = JSON.stringify(user);
+    localStorage.setItem("foody_user", raw);
     writeCookie("foody_role", user.role);
+
+    // Update cache
+    cachedRaw = raw;
+    cachedUser = user;
+
+    // Dispatch a storage event to sync UI components across tabs/components
+    window.dispatchEvent(new Event("storage"));
   }
 }
 
@@ -47,13 +58,25 @@ export function getAuthUser() {
   }
 
   const raw = localStorage.getItem("foody_user");
+
   if (!raw) {
+    cachedUser = null;
+    cachedRaw = null;
     return null;
   }
 
+  // Return cached object if the raw string matches (prevents infinite re-renders in useSyncExternalStore)
+  if (raw === cachedRaw) {
+    return cachedUser;
+  }
+
   try {
-    return JSON.parse(raw) as UserProfile;
+    cachedRaw = raw;
+    cachedUser = JSON.parse(raw) as UserProfile;
+    return cachedUser;
   } catch {
+    cachedUser = null;
+    cachedRaw = null;
     return null;
   }
 }
@@ -91,9 +114,14 @@ export function getAuthRole() {
 export function clearAuthSession() {
   if (typeof window !== "undefined") {
     localStorage.removeItem("foody_user");
-    localStorage.removeItem("foody_token"); // Cleanup legacy tokens if they exist
+    localStorage.removeItem("foody_token");
     deleteCookie("foody_role");
-    deleteCookie("foody_token"); // Cleanup legacy tokens
+    deleteCookie("foody_token");
+
+    // Clear cache
+    cachedUser = null;
+    cachedRaw = null;
+
     window.dispatchEvent(new Event("storage"));
   }
 }
