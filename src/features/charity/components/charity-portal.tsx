@@ -13,7 +13,8 @@ import {
   type SurplusMeal,
   type UserProfile,
 } from "@/features/charity/api";
-import { clearAuthSession, getAuthUser } from "@/platform/auth/session.client";
+import { getAuthUser } from "@/platform/auth/session.client";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import { DashboardTab } from "./charity-portal/dashboard-tab";
 import { DonationsTab } from "./charity-portal/donations-tab";
 import { HistoryTab } from "./charity-portal/history-tab";
@@ -197,9 +198,10 @@ export function CharityPortal() {
     }
   }
 
+  const logout = useLogout();
+
   function handleSignOut() {
-    clearAuthSession();
-    navigate.push("/auth");
+    logout();
   }
 
   const unreadCount = notifications.filter(

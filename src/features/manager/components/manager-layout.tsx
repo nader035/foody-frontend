@@ -1,7 +1,7 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { clearAuthSession } from "@/platform/auth/session.client";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import { Logo } from "@/shared/branding";
 import {
   LayoutDashboard,
@@ -29,10 +29,10 @@ const navItems = [
 export function ManagerLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const logout = useLogout();
 
   const handleLogout = () => {
-    clearAuthSession();
-    router.push("/auth");
+    logout();
   };
 
   return (

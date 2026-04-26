@@ -24,26 +24,19 @@ function deleteCookie(name: string) {
   document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax`;
 }
 
-export function saveAuthUser(user: UserProfile, token?: string) {
+export function saveAuthUser(user: UserProfile) {
   if (typeof window !== "undefined") {
     localStorage.setItem("foody_user", JSON.stringify(user));
     writeCookie("foody_role", user.role);
-    if (token) {
-      localStorage.setItem("foody_token", token);
-      writeCookie("foody_token", token);
-    }
   }
 }
 
-export function saveAuthSession(user: UserProfile, token?: string) {
-  saveAuthUser(user, token);
+export function saveAuthSession(user: UserProfile) {
+  saveAuthUser(user);
 }
 
 export function getAuthToken() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  return localStorage.getItem("foody_token");
+  return null; // Token is now securely handled by HTTP-only cookies
 }
 
 export function getAuthUser() {
@@ -66,8 +59,9 @@ export function getAuthUser() {
 export function clearAuthSession() {
   if (typeof window !== "undefined") {
     localStorage.removeItem("foody_user");
-    localStorage.removeItem("foody_token");
+    localStorage.removeItem("foody_token"); // Cleanup legacy tokens if they exist
     deleteCookie("foody_role");
-    deleteCookie("foody_token");
+    deleteCookie("foody_token"); // Cleanup legacy tokens
+    window.dispatchEvent(new Event("storage"));
   }
 }

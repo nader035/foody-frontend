@@ -271,7 +271,7 @@ export function AuthSignup() {
         organizationWebsite: values.organizationWebsite || undefined,
       });
 
-      saveAuthSession(result.user, result.token);
+      saveAuthSession(result.user);
       navigate.push(roleConfig[result.user.role]?.redirect || config.redirect);
     } catch (error) {
       setErrorMessage(

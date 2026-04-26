@@ -29,6 +29,9 @@ export const authApi = {
       http.post(API_ENDPOINTS.users.register, data),
     );
   },
+  logout() {
+    return http.post(API_ENDPOINTS.users.logout);
+  },
   getCurrentUser() {
     return unwrapResponse<UserProfile>(http.get(API_ENDPOINTS.users.me));
   },

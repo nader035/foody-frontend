@@ -22,7 +22,8 @@ import {
   type UserProfile,
 } from "@/features/customer/api";
 import { CustomerNav } from "@/features/customer/components/customer-nav";
-import { clearAuthSession, getAuthUser } from "@/platform/auth/session.client";
+import { useLogout } from "@/features/auth/hooks/useLogout";
+import { getAuthUser } from "@/platform/auth/session.client";
 
 type Tab = "profile" | "orders";
 
@@ -150,9 +151,10 @@ export function CustomerProfile() {
     }
   }
 
+  const logout = useLogout();
+
   function handleSignOut() {
-    clearAuthSession();
-    navigate.push("/auth");
+    logout();
   }
 
   if (loading) {

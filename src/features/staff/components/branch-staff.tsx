@@ -17,7 +17,7 @@ import {
   type UserProfile,
   type Branch,
 } from "@/features/staff/api";
-import { clearAuthSession } from "@/platform/auth/session.client";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import {
   Clock,
   Plus,
@@ -479,9 +479,9 @@ export function BranchStaff() {
     }
   };
 
+  const logout = useLogout();
   const handleLogout = () => {
-    clearAuthSession();
-    navigate.push("/auth");
+    logout();
   };
 
   // Stats Logic
