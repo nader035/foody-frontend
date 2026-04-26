@@ -38,10 +38,9 @@ function toHttpError(error: AxiosError<ApiErrorPayload>) {
 }
 
 const getBaseUrl = () => {
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  const url =
-    envUrl || "https://foody-backend-production.up.railway.app/api/v1";
-  return url.endsWith("/") ? url : `${url}/`;
+  // Use relative path to leverage Next.js rewrites (proxies)
+  // This solves third-party cookie blocking issues in production.
+  return "/api/v1/";
 };
 
 export const http = axios.create({
