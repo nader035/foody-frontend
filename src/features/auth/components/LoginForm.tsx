@@ -20,10 +20,11 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useLogin } from "@/features/auth/hooks/useLogin";
+import type { UserRole } from "@/features/auth/types";
 import { Logo } from "@/shared/branding";
 
 const roleConfig: Record<
-  string,
+  UserRole,
   {
     label: string;
     icon: LucideIcon;
