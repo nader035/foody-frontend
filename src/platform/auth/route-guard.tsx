@@ -2,7 +2,13 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getAuthUser } from "./session.client";
+import { apiGetMe } from "@/lib/api";
+import {
+  clearAuthSession,
+  getAuthRole,
+  getAuthUser,
+  saveAuthSession,
+} from "./session.client";
 import { getRequiredRole, isGuestOnlyRoute, roleHome } from "./route-access";
 
 export function RouteGuard() {
@@ -10,30 +16,60 @@ export function RouteGuard() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!pathname) {
-      return;
-    }
+    let cancelled = false;
 
-    const user = getAuthUser();
-    const hasSession = Boolean(user);
-    const requiredRole = getRequiredRole(pathname);
-
-    if (requiredRole) {
-      if (!hasSession) {
-        router.replace("/auth");
+    async function runGuard() {
+      if (!pathname) {
         return;
       }
 
-      if (user?.role && user.role !== requiredRole) {
-        router.replace(roleHome[user.role]);
+      let user = getAuthUser();
+      let role = user?.role ?? getAuthRole();
+      const requiredRole = getRequiredRole(pathname);
+
+      if (!user && role) {
+        try {
+          const profile = await apiGetMe();
+          if (cancelled) {
+            return;
+          }
+
+          saveAuthSession(profile);
+          user = profile;
+          role = profile.role;
+        } catch {
+          if (cancelled) {
+            return;
+          }
+
+          clearAuthSession();
+          role = null;
+        }
       }
 
-      return;
+      if (requiredRole) {
+        if (!role) {
+          router.replace("/auth");
+          return;
+        }
+
+        if (role !== requiredRole) {
+          router.replace(roleHome[role]);
+        }
+
+        return;
+      }
+
+      if (isGuestOnlyRoute(pathname) && role) {
+        router.replace(roleHome[role]);
+      }
     }
 
-    if (isGuestOnlyRoute(pathname) && hasSession && user?.role) {
-      router.replace(roleHome[user.role]);
-    }
+    runGuard();
+
+    return () => {
+      cancelled = true;
+    };
   }, [pathname, router]);
 
   return null;

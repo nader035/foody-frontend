@@ -56,6 +56,28 @@ export function getAuthUser() {
   }
 }
 
+export function getAuthRole() {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const raw = document.cookie
+    .split(";")
+    .map((entry) => entry.trim())
+    .find((entry) => entry.startsWith("foody_role="));
+
+  if (!raw) {
+    return null;
+  }
+
+  const encodedValue = raw.slice("foody_role=".length);
+  try {
+    return decodeURIComponent(encodedValue);
+  } catch {
+    return encodedValue;
+  }
+}
+
 export function clearAuthSession() {
   if (typeof window !== "undefined") {
     localStorage.removeItem("foody_user");

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { type KeyboardEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Logo } from "@/shared/branding";
 import {
@@ -51,10 +51,46 @@ export function AuthRoleSelect() {
   const navigate = useRouter();
   const [selected, setSelected] = useState<string | null>(null);
 
+  function goToSignup() {
+    if (!selected || selected === "staff") {
+      return;
+    }
+
+    navigate.push(`/signup?role=${selected}`);
+  }
+
+  function goToLogin() {
+    if (!selected) {
+      return;
+    }
+
+    navigate.push(`/login?role=${selected}`);
+  }
+
+  function handleEnterAction(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    if (!selected) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (selected === "staff") {
+      goToLogin();
+      return;
+    }
+
+    goToSignup();
+  }
+
   return (
     <div
       className="min-h-screen flex"
       style={{ fontFamily: "Nunito, sans-serif" }}
+      onKeyDown={handleEnterAction}
     >
       {/* Left Panel */}
       <div className="hidden lg:flex lg:w-[45%] bg-[#155433] flex-col justify-between p-12 relative overflow-hidden">
@@ -133,6 +169,7 @@ export function AuthRoleSelect() {
               const isSelected = selected === r.id;
               return (
                 <button
+                  type="button"
                   key={r.id}
                   onClick={() => setSelected(r.id)}
                   className={`relative text-left p-5 rounded-2xl border-2 transition-all group ${
@@ -198,8 +235,9 @@ export function AuthRoleSelect() {
             )}
             {selected !== "staff" && (
               <button
+                type="button"
                 disabled={!selected}
-                onClick={() => navigate.push(`/signup?role=${selected}`)}
+                onClick={goToSignup}
                 className="w-full bg-[#25A05F] hover:bg-[#1e8a4f] disabled:opacity-40 disabled:cursor-not-allowed text-white py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-all"
                 style={{ fontWeight: 600 }}
               >
@@ -207,8 +245,9 @@ export function AuthRoleSelect() {
               </button>
             )}
             <button
+              type="button"
               disabled={!selected}
-              onClick={() => navigate.push(`/login?role=${selected}`)}
+              onClick={goToLogin}
               className={`w-full ${selected === "staff" ? "bg-[#25A05F] hover:bg-[#1e8a4f] text-white" : "bg-white hover:bg-gray-50 border border-gray-200 text-[#0E3442]"} disabled:opacity-40 disabled:cursor-not-allowed py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition-all`}
               style={{ fontWeight: 600 }}
             >

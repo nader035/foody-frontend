@@ -9,12 +9,10 @@ export const roleHome: Record<UserRole, string> = {
 
 export const protectedRolePrefixes: Array<{ prefix: string; role: UserRole }> =
   [
+    { prefix: "/customer", role: "customer" },
     { prefix: "/manager", role: "manager" },
     { prefix: "/staff", role: "staff" },
     { prefix: "/charity", role: "charity" },
-    { prefix: "/customer/profile", role: "customer" },
-    { prefix: "/customer/wishlist", role: "customer" },
-    { prefix: "/customer/cart", role: "customer" },
   ];
 
 export const guestOnlyPrefixes = [
