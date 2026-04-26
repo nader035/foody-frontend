@@ -10,7 +10,7 @@ export function useLogout() {
   const logout = async () => {
     try {
       await authApi.logout();
-    } catch (e) {
+    } catch {
       // Ignore errors during logout
     } finally {
       clearAuthSession();

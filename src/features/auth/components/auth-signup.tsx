@@ -80,7 +80,7 @@ const roleConfig: Record<
     emailPlaceholder: "you@restaurant.com",
     leftTitle: "Join your\nbranch team",
     leftDesc:
-      "Get set up in seconds. Your manager has already configured everything â€” just start logging surplus.",
+      "Get set up in seconds. Your manager has already configured everything - just start logging surplus.",
     perks: [
       "Quick surplus logging in seconds",
       "No setup required, just join",
@@ -103,6 +103,16 @@ const roleConfig: Record<
     ],
   },
 };
+
+function resolveRole(rawRole: string | null): keyof typeof roleConfig {
+  if (!rawRole) {
+    return "customer";
+  }
+
+  return rawRole in roleConfig
+    ? (rawRole as keyof typeof roleConfig)
+    : "customer";
+}
 
 const signupSchema = z
   .object({
@@ -174,7 +184,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export function AuthSignup() {
   const navigate = useRouter();
   const params = useSearchParams();
-  const role = params.get("role") || "customer";
+  const role = resolveRole(params.get("role"));
   const config = roleConfig[role] || roleConfig.customer;
   const RoleIcon = config.icon;
 
@@ -207,7 +217,7 @@ export function AuthSignup() {
     setValue("role", role as SignupFormValues["role"]);
   }, [role, setValue]);
 
-  // Staff cannot self-register â€” redirect to login
+  // Staff cannot self-register - redirect to login
   if (role === "staff") {
     return (
       <div

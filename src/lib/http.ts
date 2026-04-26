@@ -22,14 +22,12 @@ export class HttpError extends Error {
   }
 }
 
-
-
 function toHttpError(error: AxiosError<ApiErrorPayload>) {
   const data = error.response?.data;
   const isObject = typeof data === "object" && data !== null;
-  
+
   const details = isObject ? data.errors : undefined;
-  const detailsMessage = details?.map((entry: any) => entry.message).join(", ");
+  const detailsMessage = details?.map((entry) => entry.message).join(", ");
   const message =
     detailsMessage ||
     (isObject ? data.message : undefined) ||
@@ -41,7 +39,8 @@ function toHttpError(error: AxiosError<ApiErrorPayload>) {
 
 const getBaseUrl = () => {
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  const url = envUrl || "https://foody-backend-production.up.railway.app/api/v1";
+  const url =
+    envUrl || "https://foody-backend-production.up.railway.app/api/v1";
   return url.endsWith("/") ? url : `${url}/`;
 };
 

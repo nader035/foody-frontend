@@ -10,23 +10,22 @@ type UserRole = "customer" | "manager" | "staff" | "charity";
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const token = request.cookies.get("foody_token")?.value;
   const role = request.cookies.get("foody_role")?.value as UserRole | undefined;
   const requiredRole = getRequiredRole(pathname);
 
   if (requiredRole) {
-    if (!token) {
+    if (!role) {
       const authUrl = new URL("/auth", request.url);
       authUrl.searchParams.set("next", pathname);
       return NextResponse.redirect(authUrl);
     }
 
-    if (role && role !== requiredRole) {
+    if (role !== requiredRole) {
       return NextResponse.redirect(new URL(roleHome[role], request.url));
     }
   }
 
-  if (isGuestOnlyRoute(pathname) && token && role) {
+  if (isGuestOnlyRoute(pathname) && role) {
     return NextResponse.redirect(new URL(roleHome[role], request.url));
   }
 

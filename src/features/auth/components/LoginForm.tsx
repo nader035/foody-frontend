@@ -69,11 +69,21 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+function resolveRole(rawRole: string | null): keyof typeof roleConfig {
+  if (!rawRole) {
+    return "customer";
+  }
+
+  return rawRole in roleConfig
+    ? (rawRole as keyof typeof roleConfig)
+    : "customer";
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const loginMutation = useLogin();
-  const role = searchParams.get("role") || "customer";
+  const role = resolveRole(searchParams.get("role"));
   const config = roleConfig[role] || roleConfig.customer;
   const RoleIcon = config.icon;
   const [showPassword, setShowPassword] = useState(false);
@@ -97,7 +107,7 @@ export function LoginForm() {
     try {
       const response = await loginMutation.mutateAsync({
         ...values,
-        role: role as any,
+        role,
       });
       router.push(roleConfig[response.user.role]?.redirect || config.redirect);
     } catch {
